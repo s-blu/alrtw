@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
 
 @Component({
   selector: 'alrtw-ready-to-watch-list',
@@ -20,20 +20,32 @@ export class ReadyToWatchListComponent implements OnInit {
 
 
     this.getClientCredentialToken().subscribe(token => {
+      console.log('got auth token: ' + token);
       const getAnimeListUrl = this.aniListUrl + `user/${username}/animelist?access_token=${token}`;
       console.log(getAnimeListUrl);
 
-      this.http.get(getAnimeListUrl)
+      this.http.get(getAnimeListUrl, {
+        params: new HttpParams().set('id', '3'),
+      })
         .subscribe(response => {
           // this.animeList = response;
         });
-    });
+    },
+    err => console.log('Getting a auth token was not successful: ' + err));
   }
 
   getClientCredentialToken() {
-    console.log('trying to get client cred')
-    return this.http.get(this.aniListUrl + 'auth/access_token')
+    const postBody = {
+      grant_type    : 'client_credentials',
+      client_id     : '127',
+      client_secret : 'NNfsSxPBwrIb7I07PXZ5egSWVhQzpgAFQxgFOGf8'
+    };
+
+    console.log('trying to get client cred');
+    return this.http.post(this.aniListUrl + 'auth/access_token', postBody)
   }
+
+
 
   ngOnInit() {
   }
