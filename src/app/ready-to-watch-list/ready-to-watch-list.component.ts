@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
 
 @Component({
@@ -14,22 +14,22 @@ export class ReadyToWatchListComponent implements OnInit {
 
   constructor(private http: HttpClient) {
     this.username = 'Saari'; // FIXME get this through input
-    this.getUserAnimeList(this.username);
+    this.getAiringStatusOfCurrAnimesByUser(this.username);
   }
 
-  getUserAnimeList(username) {
-    const getCurrentAnimeByUser = {
-      query: `query  {
-      Page {
-        mediaList(userName: "${username}", status:CURRENT) {
-          id
-          mediaId
-          notes
-          progress
-        }
-      }
-    }`
-    };
+  private getAiringStatusOfCurrAnimesByUser(username) {
+    this.queryCurrentAnimeByUser(username).subscribe(currAnimeRes => {
+      this.currentWatchedAnimes = currAnimeRes['data'].Page.mediaList;
+
+      this.queryAiringSheduleOfCurrentAnime(this.getListOfAnimeIds()).subscribe(animeAiringRes => {
+          this.currentAnimeAiringStatus = animeAiringRes['data'].Page.mediaList;
+        },
+        err => console.log('getting the airing status errored: ' + err)
+      );
+    });
+  }
+
+  private queryAiringSheduleOfCurrentAnime(animeIds) {
     const getAiringStatusOfCurrentAnimesQuery = {
       query: `query($mediaIds: [Int], $airingAt: Int)  {
           Page {
@@ -50,31 +50,38 @@ export class ReadyToWatchListComponent implements OnInit {
           }
         }`,
       variables: {
-        mediaIds: [],
+        mediaIds: animeIds,
         airingAt: Math.round(Date.now() / 1000) // current time since epoch in seconds because the api wants it so
       }
     };
 
-      this.http.post(this.aniListUrl, getCurrentAnimeByUser)
-        .subscribe(currAnimeRes => {
-          let animeIds = [];
-
-          this.currentWatchedAnimes = currAnimeRes['data'].Page.mediaList;
-          for (let i = 0; i < this.currentWatchedAnimes.length; i++) {
-            animeIds.push(this.currentWatchedAnimes[i].mediaId);
-            console.log(this.currentWatchedAnimes[i].mediaId)
-          }
-          getAiringStatusOfCurrentAnimesQuery.variables.mediaIds = animeIds;
-          console.log(getAiringStatusOfCurrentAnimesQuery.variables.airingAt);
-          this.http.post(this.aniListUrl, getAiringStatusOfCurrentAnimesQuery).subscribe(animeAiringRes => {
-            this.currentAnimeAiringStatus = animeAiringRes['data'].Page.mediaList;
-            console.log()
-          },
-          err => console.log('getting the airing status errored: ' + err))
-
-        });
+    return this.http.post(this.aniListUrl, getAiringStatusOfCurrentAnimesQuery);
   }
 
+  private queryCurrentAnimeByUser(username) {
+    const getCurrentAnimeByUser = {
+      query: `query  {
+      Page {
+        mediaList(userName: "${username}", status:CURRENT) {
+          id
+          mediaId
+          notes
+          progress
+        }
+      }
+    }`
+    };
+
+    return this.http.post(this.aniListUrl, getCurrentAnimeByUser);
+  }
+
+  private getListOfAnimeIds() {
+    const animeIds = [];
+    for (let i = 0; i < this.currentWatchedAnimes.length; i++) {
+      animeIds.push(this.currentWatchedAnimes[i].mediaId);
+    }
+    return animeIds;
+  }
 
 
   ngOnInit() {
