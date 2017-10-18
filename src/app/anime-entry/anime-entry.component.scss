@@ -1,0 +1,17 @@
+
+.ready-to-watch-entry {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: 1fr;
+
+  .title {
+    grid-column: 1;
+  }
+  .episodes {
+    grid-column: 2;
+  }
+  .nextAiring {
+    grid-column: 3;
+    color: #8d8d8d;
+  }
+}

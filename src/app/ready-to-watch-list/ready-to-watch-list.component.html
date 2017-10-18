@@ -1,7 +1,13 @@
-<h3>Hello, {{username}}!</h3>
+<h3>Hello, {{username || "anime friend"}}!</h3>
 
-<p>Here is your AniList AnimeList: </p>
+Input your AniList Username here: <input [(ngModel)]="username" /> <button (click)="uiGetList()">Get List</button>
 
-<div *ngFor="let currAnime of currentAnimeAiringStatus">
+<div>{{errorText}}</div>
+
+<p>Here are your current Animes and the episodes that are waiting for you: </p>
+
+<div *ngFor="let currAnime of animes">
   <alrtw-anime-entry [anime]="currAnime"></alrtw-anime-entry>
 </div>
+
+

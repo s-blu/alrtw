@@ -14,12 +14,19 @@ export class ReadyToWatchListComponent implements OnInit {
   currentWatchedAnimes;
   animes;
   username;
+  errorText = "";
 
   constructor(private http: HttpClient) {
-    this.username = 'Saari'; // FIXME get this through input
-    this.getReadyToWatchInfoByUser(this.username);
   }
 
+   uiGetList() {
+    if (!this.username || this.username === "") {
+      this.setError('Please input a username first');
+      return;
+    }
+    this.getReadyToWatchInfoByUser(this.username)
+
+  }
 
   private getReadyToWatchInfoByUser(username) {
     this.queryCurrentAnimeByUser(username).subscribe(currAnimeRes => {
@@ -31,13 +38,14 @@ export class ReadyToWatchListComponent implements OnInit {
           const animeMapping = {};
           this.currentAnimeAiringStatus.forEach(item => {
             animeMapping[item.mediaId] = item;
-          })
+          });
           this.animes = this.transformToReadyToWatchInfo(animeMapping)
-
+          this.resetError();
         },
-        err => console.log('getting the airing status errored: ' + err)
+        err => this.setError(err.statusText)
       );
-    });
+    },
+    err => this.setError(err.statusText))
   }
 
   private transformToReadyToWatchInfo(animeMapping) {
@@ -115,6 +123,17 @@ export class ReadyToWatchListComponent implements OnInit {
     return animeIds;
   }
 
+  private setError(text) {
+    if (text === 500) {
+      text = 'Could not get any data. Maybe wrong username?'
+    }
+
+    this.errorText = "Something went wrong! " + text;
+  }
+
+  private resetError() {
+    this.errorText = "";
+  }
 
   ngOnInit() {
   }
