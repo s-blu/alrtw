@@ -2,4 +2,6 @@
 
 <p>Here is your AniList AnimeList: </p>
 
-{{animeList}}
+<div *ngFor="let currAnime of currentAnimeAiringStatus">
+  <alrtw-anime-entry [anime]="currAnime"></alrtw-anime-entry>
+</div>

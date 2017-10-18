@@ -1,6 +1,8 @@
 import {Component, OnInit} from '@angular/core';
 import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
 
+import { ReadyToWatchInfo } from '../ready-to-watch-info'
+
 @Component({
   selector: 'alrtw-ready-to-watch-list',
   templateUrl: './ready-to-watch-list.component.html',
@@ -10,23 +12,53 @@ export class ReadyToWatchListComponent implements OnInit {
   aniListUrl = 'https://graphql.anilist.co';
   currentAnimeAiringStatus;
   currentWatchedAnimes;
+  animes;
   username;
 
   constructor(private http: HttpClient) {
     this.username = 'Saari'; // FIXME get this through input
-    this.getAiringStatusOfCurrAnimesByUser(this.username);
+    this.getReadyToWatchInfoByUser(this.username);
   }
 
-  private getAiringStatusOfCurrAnimesByUser(username) {
+
+  private getReadyToWatchInfoByUser(username) {
     this.queryCurrentAnimeByUser(username).subscribe(currAnimeRes => {
       this.currentWatchedAnimes = currAnimeRes['data'].Page.mediaList;
 
       this.queryAiringSheduleOfCurrentAnime(this.getListOfAnimeIds()).subscribe(animeAiringRes => {
-          this.currentAnimeAiringStatus = animeAiringRes['data'].Page.mediaList;
+          this.currentAnimeAiringStatus = animeAiringRes['data'].Page.airingSchedules;
+
+          const animeMapping = {};
+          this.currentAnimeAiringStatus.forEach(item => {
+            animeMapping[item.mediaId] = item;
+          })
+          this.animes = this.transformToReadyToWatchInfo(animeMapping)
+
         },
         err => console.log('getting the airing status errored: ' + err)
       );
     });
+  }
+
+  private transformToReadyToWatchInfo(animeMapping) {
+    const readyToWatchInfos = [];
+
+    Object.keys(animeMapping).forEach(mediaId => {
+      const airingInfo = animeMapping[mediaId];
+      const currentAnimeEntry = this.currentWatchedAnimes.find(item => {
+        return item.mediaId === airingInfo.mediaId;
+      });
+
+      const episodesReadyToWatch = airingInfo.episode - currentAnimeEntry.progress;
+      readyToWatchInfos.push(new ReadyToWatchInfo(
+        airingInfo.mediaId,
+        airingInfo.media.title,
+        episodesReadyToWatch,
+        0 // FIXME
+      ));
+    });
+
+    return readyToWatchInfos;
   }
 
   private queryAiringSheduleOfCurrentAnime(animeIds) {

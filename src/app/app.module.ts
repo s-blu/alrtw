@@ -4,11 +4,13 @@ import {HttpClientModule} from '@angular/common/http';
 
 import { AppComponent } from './app.component';
 import { ReadyToWatchListComponent } from './ready-to-watch-list/ready-to-watch-list.component';
+import { AnimeEntryComponent } from './anime-entry/anime-entry.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    ReadyToWatchListComponent
+    ReadyToWatchListComponent,
+    AnimeEntryComponent
   ],
   imports: [
     BrowserModule,
