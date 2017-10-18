@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
 
-import { ReadyToWatchInfo } from '../ready-to-watch-info'
+import {ReadyToWatchInfo} from '../ready-to-watch-info'
 
 @Component({
   selector: 'alrtw-ready-to-watch-list',
@@ -16,10 +16,11 @@ export class ReadyToWatchListComponent implements OnInit {
   username;
   errorText = "";
 
+
   constructor(private http: HttpClient) {
   }
 
-   uiGetList() {
+  uiGetList() {
     if (!this.username || this.username === "") {
       this.setError('Please input a username first');
       return;
@@ -30,37 +31,43 @@ export class ReadyToWatchListComponent implements OnInit {
 
   private getReadyToWatchInfoByUser(username) {
     this.queryCurrentAnimeByUser(username).subscribe(currAnimeRes => {
-      this.currentWatchedAnimes = currAnimeRes['data'].Page.mediaList;
+        this.currentWatchedAnimes = currAnimeRes['data'].Page.mediaList;
 
-      this.queryAiringSheduleOfCurrentAnime(this.getListOfAnimeIds()).subscribe(animeAiringRes => {
-          this.currentAnimeAiringStatus = animeAiringRes['data'].Page.airingSchedules;
+        this.queryAiringSheduleOfCurrentAnime(this.getListOfAnimeIds()).subscribe(animeAiringRes => {
+            this.currentAnimeAiringStatus = animeAiringRes['data'].Page.airingSchedules;
 
-          const animeMapping = {};
-          this.currentAnimeAiringStatus.forEach(item => {
-            animeMapping[item.mediaId] = item;
-          });
-          this.animes = this.transformToReadyToWatchInfo(animeMapping)
-          this.resetError();
-        },
-        err => this.setError(err.statusText)
-      );
-    },
-    err => this.setError(err.statusText))
+            const animeMapping = {};
+            this.currentAnimeAiringStatus.forEach(item => {
+              animeMapping[item.mediaId] = item;
+            });
+            this.animes = this.transformToReadyToWatchInfo(animeMapping);
+            this.resetError();
+          },
+          err => this.setError(err.statusText)
+        );
+      },
+      err => this.setError(err.statusText))
   }
 
   private transformToReadyToWatchInfo(animeMapping) {
     const readyToWatchInfos = [];
 
-    Object.keys(animeMapping).forEach(mediaId => {
-      const airingInfo = animeMapping[mediaId];
-      const currentAnimeEntry = this.currentWatchedAnimes.find(item => {
-        return item.mediaId === airingInfo.mediaId;
-      });
+    this.currentWatchedAnimes.forEach(currentAnimeEntry => {
+      const airingInfo = animeMapping[currentAnimeEntry.mediaId];
+      let episodesReadyToWatch;
 
-      const episodesReadyToWatch = airingInfo.episode - currentAnimeEntry.progress;
+      // there is only a airing info if the anime is releasing or not yet released. Otherwise calculate remaining episodes from total
+      if (airingInfo) {
+         episodesReadyToWatch = airingInfo.episode - currentAnimeEntry.progress;
+      } else {
+        episodesReadyToWatch = currentAnimeEntry.media.episodes - currentAnimeEntry.progress;
+      }
+
+      // TODO calculate/add time to next episode
+
       readyToWatchInfos.push(new ReadyToWatchInfo(
-        airingInfo.mediaId,
-        airingInfo.media.title,
+        currentAnimeEntry.mediaId,
+        currentAnimeEntry.media.title,
         episodesReadyToWatch,
         0 // FIXME
       ));
@@ -79,13 +86,6 @@ export class ReadyToWatchListComponent implements OnInit {
             episode
             airingAt
             timeUntilAiring
-            media {
-              title {
-                userPreferred
-                romaji
-              }
-              episodes
-            }
           }
           }
         }`,
@@ -103,10 +103,16 @@ export class ReadyToWatchListComponent implements OnInit {
       query: `query  {
       Page {
         mediaList(userName: "${username}", status:CURRENT) {
-          id
           mediaId
-          notes
           progress
+          media {
+            title {
+              userPreferred
+              romaji
+            }
+            status
+            episodes
+          }
         }
       }
     }`
@@ -138,4 +144,11 @@ export class ReadyToWatchListComponent implements OnInit {
   ngOnInit() {
   }
 
+}
+
+enum AnimeStatus {
+  FINISHED,
+  RELEASING,
+  NOT_YET_RELEASED,
+  CANCELLED
 }
