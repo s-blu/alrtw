@@ -14,6 +14,7 @@ export class ReadyToWatchListComponent implements OnInit {
   currentWatchedAnimes;
   animes;
   username;
+  aniListUserName;
   errorText = "";
 
   constructor(private http: HttpClient) {
@@ -30,6 +31,7 @@ export class ReadyToWatchListComponent implements OnInit {
   private getReadyToWatchInfoByUser(username) {
     this.queryCurrentAnimeByUser(username).subscribe(currAnimeRes => {
         this.currentWatchedAnimes = currAnimeRes['data'].Page.mediaList;
+        this.aniListUserName = username;
 
         this.queryAiringSheduleOfCurrentAnime(this.getListOfAnimeIds()).subscribe(animeAiringRes => {
             this.currentAnimeAiringStatus = animeAiringRes['data'].Page.airingSchedules;
@@ -37,10 +39,10 @@ export class ReadyToWatchListComponent implements OnInit {
             this.animes = this.transformToReadyToWatchInfo(this.currentAnimeAiringStatus);
             this.resetError();
           },
-          err => this.setError(err.statusText)
+          err => this.setError(err.error)
         );
       },
-      err => this.setError(err.statusText))
+      err => this.setError(err.error))
   }
 
   private transformToReadyToWatchInfo(animeAiringSchedules) {
@@ -134,10 +136,9 @@ export class ReadyToWatchListComponent implements OnInit {
   }
 
   private setError(text) {
-    if (text === 500) {
-      text = 'Could not get any data. Maybe wrong username?'
+    if (text instanceof Object) {
+      text = text.errors;
     }
-
     this.errorText = "Something went wrong! " + text;
   }
 
