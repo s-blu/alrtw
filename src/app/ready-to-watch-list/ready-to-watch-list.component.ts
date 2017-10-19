@@ -36,6 +36,7 @@ export class ReadyToWatchListComponent implements OnInit {
         this.queryAiringSheduleOfCurrentAnime(this.getListOfAnimeIds()).subscribe(animeAiringRes => {
             this.currentAnimeAiringStatus = animeAiringRes['data'].Page.airingSchedules;
 
+            // FIXME build mapping by using find() to get the first occurrence, means nearest airing time
             const animeMapping = {};
             this.currentAnimeAiringStatus.forEach(item => {
               animeMapping[item.mediaId] = item;
@@ -58,6 +59,7 @@ export class ReadyToWatchListComponent implements OnInit {
 
       // there is only a airing info if the anime is releasing or not yet released. Otherwise calculate remaining episodes from total
       if (airingInfo) {
+        //FIXME calculate minus one here since you get the next episode that will be aired, not the last aired
          episodesReadyToWatch = airingInfo.episode - currentAnimeEntry.progress;
       } else {
         episodesReadyToWatch = currentAnimeEntry.media.episodes - currentAnimeEntry.progress;
@@ -80,15 +82,7 @@ export class ReadyToWatchListComponent implements OnInit {
     const getAiringStatusOfCurrentAnimesQuery = {
       query: `query($mediaIds: [Int], $airingAt: Int)  {
           Page {
-            airingSchedules(mediaId_in: $mediaIds, airingAt_lesser: $airingAt) {
-            id
-            mediaId
-            episode
-            airingAt
-            timeUntilAiring
-          }
-          }
-        }`,
+            airingSchedules(mediaId_in: $mediaIds, airingAt_lesser: $airingAt) { //FIXME change airingAt_lesser to airingAt_greater now to get all episodes in the future
       variables: {
         mediaIds: animeIds,
         airingAt: Math.round(Date.now() / 1000) // current time since epoch in seconds because the api wants it so
