@@ -8,7 +8,20 @@ import {ReadyToWatchInfo} from '../ready-to-watch-info';
 })
 export class AnimeEntryComponent implements OnInit {
   @Input() anime: ReadyToWatchInfo;
-  constructor() { }
+  sevenDaysAway;
+
+  constructor() {
+  }
+
+  getTimeUntilString(secs) {
+    const days = Math.floor(secs / (3600 * 24));
+    secs  -= days * 3600 * 24;
+    const hrs   = Math.floor(secs / 3600);
+    secs  -= hrs * 3600;
+    const mnts = Math.floor(secs / 60);
+
+    return `${days}d ${hrs}h ${mnts}min`;
+  }
 
   ngOnInit() {
   }

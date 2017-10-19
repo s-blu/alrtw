@@ -16,7 +16,6 @@ export class ReadyToWatchListComponent implements OnInit {
   username;
   errorText = "";
 
-
   constructor(private http: HttpClient) {
   }
 
@@ -26,7 +25,6 @@ export class ReadyToWatchListComponent implements OnInit {
       return;
     }
     this.getReadyToWatchInfoByUser(this.username)
-
   }
 
   private getReadyToWatchInfoByUser(username) {
@@ -36,12 +34,7 @@ export class ReadyToWatchListComponent implements OnInit {
         this.queryAiringSheduleOfCurrentAnime(this.getListOfAnimeIds()).subscribe(animeAiringRes => {
             this.currentAnimeAiringStatus = animeAiringRes['data'].Page.airingSchedules;
 
-            // FIXME build mapping by using find() to get the first occurrence, means nearest airing time
-            const animeMapping = {};
-            this.currentAnimeAiringStatus.forEach(item => {
-              animeMapping[item.mediaId] = item;
-            });
-            this.animes = this.transformToReadyToWatchInfo(animeMapping);
+            this.animes = this.transformToReadyToWatchInfo(this.currentAnimeAiringStatus);
             this.resetError();
           },
           err => this.setError(err.statusText)
@@ -50,28 +43,32 @@ export class ReadyToWatchListComponent implements OnInit {
       err => this.setError(err.statusText))
   }
 
-  private transformToReadyToWatchInfo(animeMapping) {
+  private transformToReadyToWatchInfo(animeAiringSchedules) {
     const readyToWatchInfos = [];
 
     this.currentWatchedAnimes.forEach(currentAnimeEntry => {
-      const airingInfo = animeMapping[currentAnimeEntry.mediaId];
-      let episodesReadyToWatch;
+      const airingInfo = animeAiringSchedules.find(item => item.mediaId === currentAnimeEntry.mediaId);
+      let episodesReadyToWatch,
+        timeUntilAiring = 0;
 
-      // there is only a airing info if the anime is releasing or not yet released. Otherwise calculate remaining episodes from total
-      if (airingInfo) {
-        //FIXME calculate minus one here since you get the next episode that will be aired, not the last aired
-         episodesReadyToWatch = airingInfo.episode - currentAnimeEntry.progress;
-      } else {
+      // if the anime is not longer airing, there is no airing schedule. Calculate from total.
+      if (currentAnimeEntry.media.status === AnimeStatus.FINISHED || currentAnimeEntry.status === AnimeStatus.CANCELLED) {
         episodesReadyToWatch = currentAnimeEntry.media.episodes - currentAnimeEntry.progress;
+      } else if (airingInfo) {
+        // calculate - 1 since we got the info for the next episode to air, not the last released.
+        episodesReadyToWatch = airingInfo.episode - currentAnimeEntry.progress - 1;
+        timeUntilAiring = airingInfo.timeUntilAiring;
+      } else {
+        // If the anime is not finished and no airingInfo is available, then its release is further than 1 week away
+        episodesReadyToWatch = 0; // FIXME I HAVE NO FUCKING IDEA
+        timeUntilAiring = 7 * 24 * 60 * 60 // the good 'ol Chapter 1 way to calculate 7 days in seconds.
       }
-
-      // TODO calculate/add time to next episode
 
       readyToWatchInfos.push(new ReadyToWatchInfo(
         currentAnimeEntry.mediaId,
         currentAnimeEntry.media.title,
         episodesReadyToWatch,
-        0 // FIXME
+        timeUntilAiring
       ));
     });
 
@@ -79,13 +76,26 @@ export class ReadyToWatchListComponent implements OnInit {
   }
 
   private queryAiringSheduleOfCurrentAnime(animeIds) {
+    const now = new Date();
+    const inSevenDays = new Date();
+    inSevenDays.setDate(now.getDate() + 7);
+
     const getAiringStatusOfCurrentAnimesQuery = {
-      query: `query($mediaIds: [Int], $airingAt: Int)  {
-          Page {
-            airingSchedules(mediaId_in: $mediaIds, airingAt_lesser: $airingAt) { //FIXME change airingAt_lesser to airingAt_greater now to get all episodes in the future
+      query: `
+       query($mediaIds: [Int], $now: Int, $inSevenDays: Int)  {
+         Page {
+          airingSchedules(mediaId_in: $mediaIds, airingAt_greater: $now, airingAt_lesser: $inSevenDays) {
+            mediaId
+            episode
+            airingAt
+            timeUntilAiring
+          }
+        }
+      }`,
       variables: {
-        mediaIds: animeIds,
-        airingAt: Math.round(Date.now() / 1000) // current time since epoch in seconds because the api wants it so
+        mediaIds: animeIds || [],
+        now: Math.round(now.getTime() / 1000), // current time since epoch in seconds because the api wants it so
+        inSevenDays: Math.round(inSevenDays.getTime() / 1000)
       }
     };
 
@@ -140,9 +150,9 @@ export class ReadyToWatchListComponent implements OnInit {
 
 }
 
-enum AnimeStatus {
-  FINISHED,
-  RELEASING,
-  NOT_YET_RELEASED,
-  CANCELLED
-}
+const AnimeStatus = {
+  FINISHED: "FINISHED",
+  CANCELLED: "CANCELLED",
+  NOT_YET_RELEASING: "NOT_YET_RELEASING",
+  RELEASING: "RELEASING"
+};
