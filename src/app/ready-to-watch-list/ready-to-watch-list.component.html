@@ -1,9 +1,10 @@
+<!-- FIXME use some kind of "approved user name" here and use it to always display the username correct to the list -->
 <h3>Hello, {{username || "anime friend"}}!</h3>
 
 Input your AniList Username here: <input [(ngModel)]="username" /> <button (click)="uiGetList()">Get List</button>
 
 <div>{{errorText}}</div>
-
+<!-- FIXME only display this when a list could be retrieved -->
 <p>Here are your current Animes and the episodes that are waiting for you: </p>
 
 <div *ngFor="let currAnime of animes">
