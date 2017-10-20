@@ -13,6 +13,7 @@ export class ReadyToWatchListComponent implements OnInit {
   currentAnimeAiringStatus;
   currentWatchedAnimes;
   animes;
+  listUpdated;
   username;
   aniListUserName;
   errorText = "";
@@ -37,12 +38,14 @@ export class ReadyToWatchListComponent implements OnInit {
             this.currentAnimeAiringStatus = animeAiringRes['data'].Page.airingSchedules;
 
             this.animes = this.transformToReadyToWatchInfo(this.currentAnimeAiringStatus);
+
+            this.saveUpdatedTime();
             this.resetError();
           },
-          err => this.setError(err.error)
+          err => this.processFailure(err.error)
         );
       },
-      err => this.setError(err.error))
+      err => this.processFailure(err.error))
   }
 
   private transformToReadyToWatchInfo(animeAiringSchedules) {
@@ -142,8 +145,18 @@ export class ReadyToWatchListComponent implements OnInit {
     this.errorText = "Something went wrong! " + text;
   }
 
+  private processFailure(error) {
+    this.setError(error);
+    this.aniListUserName = "";
+    this.listUpdated = null;
+  }
+
   private resetError() {
     this.errorText = "";
+  }
+
+  private saveUpdatedTime() {
+    this.listUpdated = new Date();
   }
 
   ngOnInit() {
