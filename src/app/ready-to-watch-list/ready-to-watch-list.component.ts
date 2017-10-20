@@ -1,24 +1,22 @@
 import {Component, OnInit} from '@angular/core';
-import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
 
 import {ReadyToWatchInfo} from '../ready-to-watch-info'
+import {AniListQueryService} from "../ani-list-query.service";
 
 @Component({
   selector: 'alrtw-ready-to-watch-list',
   templateUrl: './ready-to-watch-list.component.html',
-  styleUrls: ['./ready-to-watch-list.component.scss']
+  styleUrls: ['./ready-to-watch-list.component.scss'],
+  providers: [AniListQueryService]
 })
 export class ReadyToWatchListComponent implements OnInit {
-  aniListUrl = 'https://graphql.anilist.co';
-  currentAnimeAiringStatus;
-  currentWatchedAnimes;
   animes;
   listUpdated;
   username;
   aniListUserName;
   errorText = "";
 
-  constructor(private http: HttpClient) {
+  constructor(private aniListQueryService: AniListQueryService) {
   }
 
   uiGetList() {
@@ -30,14 +28,16 @@ export class ReadyToWatchListComponent implements OnInit {
   }
 
   private getReadyToWatchInfoByUser(username) {
-    this.queryCurrentAnimeByUser(username).subscribe(currAnimeRes => {
-        this.currentWatchedAnimes = currAnimeRes['data'].Page.mediaList;
+    let currentWatchedAnimes;
+
+    this.aniListQueryService.queryCurrentAnimeByUser(username).subscribe(currAnimeRes => {
+        currentWatchedAnimes = currAnimeRes['data'].Page.mediaList;
         this.aniListUserName = username;
 
-        this.queryAiringSheduleOfCurrentAnime(this.getListOfAnimeIds()).subscribe(animeAiringRes => {
-            this.currentAnimeAiringStatus = animeAiringRes['data'].Page.airingSchedules;
+        this.aniListQueryService.queryAiringSheduleOfCurrentAnime(this.getListOfAnimeIds(currentWatchedAnimes))
+          .subscribe(animeAiringRes => {
 
-            this.animes = this.transformToReadyToWatchInfo(this.currentAnimeAiringStatus);
+            this.animes = this.transformToReadyToWatchInfo(currentWatchedAnimes, animeAiringRes['data'].Page.airingSchedules);
 
             this.saveUpdatedTime();
             this.resetError();
@@ -48,10 +48,10 @@ export class ReadyToWatchListComponent implements OnInit {
       err => this.processFailure(err.error))
   }
 
-  private transformToReadyToWatchInfo(animeAiringSchedules) {
+  private transformToReadyToWatchInfo(currentAnimes, animeAiringSchedules) {
     const readyToWatchInfos = [];
 
-    this.currentWatchedAnimes.forEach(currentAnimeEntry => {
+    currentAnimes.forEach(currentAnimeEntry => {
       const airingInfo = animeAiringSchedules.find(item => item.mediaId === currentAnimeEntry.mediaId);
       let episodesReadyToWatch,
         timeUntilAiring = 0;
@@ -80,60 +80,10 @@ export class ReadyToWatchListComponent implements OnInit {
     return readyToWatchInfos;
   }
 
-  private queryAiringSheduleOfCurrentAnime(animeIds) {
-    const now = new Date();
-    const inSevenDays = new Date();
-    inSevenDays.setDate(now.getDate() + 7);
-
-    const getAiringStatusOfCurrentAnimesQuery = {
-      query: `
-       query($mediaIds: [Int], $now: Int, $inSevenDays: Int)  {
-         Page {
-          airingSchedules(mediaId_in: $mediaIds, airingAt_greater: $now, airingAt_lesser: $inSevenDays) {
-            mediaId
-            episode
-            airingAt
-            timeUntilAiring
-          }
-        }
-      }`,
-      variables: {
-        mediaIds: animeIds || [],
-        now: Math.round(now.getTime() / 1000), // current time since epoch in seconds because the api wants it so
-        inSevenDays: Math.round(inSevenDays.getTime() / 1000)
-      }
-    };
-
-    return this.http.post(this.aniListUrl, getAiringStatusOfCurrentAnimesQuery);
-  }
-
-  private queryCurrentAnimeByUser(username) {
-    const getCurrentAnimeByUser = {
-      query: `query  {
-      Page {
-        mediaList(userName: "${username}", status:CURRENT) {
-          mediaId
-          progress
-          media {
-            title {
-              userPreferred
-              romaji
-            }
-            status
-            episodes
-          }
-        }
-      }
-    }`
-    };
-
-    return this.http.post(this.aniListUrl, getCurrentAnimeByUser);
-  }
-
-  private getListOfAnimeIds() {
+  private getListOfAnimeIds(currentAnimes) {
     const animeIds = [];
-    for (let i = 0; i < this.currentWatchedAnimes.length; i++) {
-      animeIds.push(this.currentWatchedAnimes[i].mediaId);
+    for (let i = 0; i < currentAnimes.length; i++) {
+      animeIds.push(currentAnimes[i].mediaId);
     }
     return animeIds;
   }
@@ -147,6 +97,7 @@ export class ReadyToWatchListComponent implements OnInit {
 
   private processFailure(error) {
     this.setError(error);
+    this.animes = null;
     this.aniListUserName = "";
     this.listUpdated = null;
   }
