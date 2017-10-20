@@ -1,6 +1,10 @@
 <h3>Hello, {{aniListUserName || "anime friend"}}!</h3>
 
-Input your AniList Username here: <input [(ngModel)]="username" /> <button (click)="uiGetList()">Get List</button>
+Input your AniList Username here:
+<mat-form-field>
+  <input matInput placeholder="username" [(ngModel)]="username" />
+</mat-form-field>
+<button mat-button (click)="uiGetList()">Get List</button>
 
 <span *ngIf="listUpdated" class="listUpdated">
   List retrieved at {{listUpdated.toLocaleString()}}

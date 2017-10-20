@@ -6,6 +6,7 @@ import { FormsModule } from '@angular/forms';
 import { AppComponent } from './app.component';
 import { ReadyToWatchListComponent } from './ready-to-watch-list/ready-to-watch-list.component';
 import { AnimeEntryComponent } from './anime-entry/anime-entry.component';
+import {AlrtwMaterialModule} from "./alrtw-material/alrtw-material.module";
 
 @NgModule({
   declarations: [
@@ -16,7 +17,8 @@ import { AnimeEntryComponent } from './anime-entry/anime-entry.component';
   imports: [
     BrowserModule,
     HttpClientModule,
-    FormsModule
+    FormsModule,
+    AlrtwMaterialModule
   ],
   providers: [],
   bootstrap: [AppComponent]
