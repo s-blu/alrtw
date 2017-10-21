@@ -1,16 +1,15 @@
+@import '../variables';
+
 .wrapper {
   display: grid;
   grid-template-columns: 1fr 70% 1fr;
   grid-template-rows: 100%;
-
-  background-color: #e6e6e6;
-  min-height:100%;
+  padding:1.5em;
 
   .content {
     grid-column: 2;
 
     background-color: white;
-    margin:50px;
     padding: 1.5em;
     border-radius: 10px;
   }

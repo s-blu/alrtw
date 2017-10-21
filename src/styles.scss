@@ -1,6 +1,9 @@
 @import "~@angular/material/prebuilt-themes/indigo-pink.css";
+@import 'variables.scss';
+
 html {
-  font-family: Calibri, Non-serif;
+  font-family: Calibri, sans-serif;
+  background-color: $color_bg;
 }
 
 html, body {

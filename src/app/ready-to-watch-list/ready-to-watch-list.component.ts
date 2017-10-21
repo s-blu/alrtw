@@ -43,11 +43,11 @@ export class ReadyToWatchListComponent implements OnInit {
             this.saveUpdatedTime();
             this.resetError();
           },
-          err => this.processFailure(err.error)
+          err => this.processFailure(this.aniListQueryService.getErrorText(err.error))
         );
       },
-      err => this.processFailure(err.error))
-  }
+      err => this.processFailure(this.aniListQueryService.getErrorText(err.error))
+  )}
 
   private transformToReadyToWatchInfo(currentAnimes, animeAiringSchedules) {
     const readyToWatchInfos = [];
@@ -90,9 +90,6 @@ export class ReadyToWatchListComponent implements OnInit {
   }
 
   private setError(text) {
-    if (text instanceof Object) {
-      text = text.errors;
-    }
     this.errorText = "Something went wrong! " + text;
   }
 
