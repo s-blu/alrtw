@@ -1,18 +1,16 @@
-<h3>Hello, {{aniListUserName || "anime friend"}}!</h3>
-
-Input your AniList Username here:
-<mat-form-field>
-  <input matInput placeholder="username" [(ngModel)]="username" />
-</mat-form-field>
-<button mat-button (click)="uiGetList()">Get List</button>
-
-<span *ngIf="listUpdated" class="listUpdated">
+<div class="username_form">
+  <mat-form-field>
+    <input matInput placeholder="AniList username" [(ngModel)]="username">
+  </mat-form-field>
+  <button mat-button (click)="uiGetList()">Get List</button>
+  <span *ngIf="listUpdated" class="listUpdated">
   List retrieved at {{listUpdated.toLocaleString()}}
 </span>
+</div>
+<div class="error">{{errorText}}</div>
 
-<div>{{errorText}}</div>
-
-<div *ngIf="animes">
+<div *ngIf="animes" class="animelist">
+  <h3>Hello, {{aniListUserName || "anime friend"}}!</h3>
   <p>Here are your current Animes and the episodes that are waiting for you: </p>
 
   <div *ngFor="let currAnime of animes" class="ready-to-watch-list">
