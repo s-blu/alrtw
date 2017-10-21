@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { Globals } from 'globals';
 
 @Component({
   selector: 'alrtw-root',
@@ -7,4 +8,6 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
   title = '[alrtw] Ready to Watch';
+  username = Globals.aniListUsername;
+
 }

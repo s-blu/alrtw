@@ -7,12 +7,14 @@ import { AppComponent } from './app.component';
 import { ReadyToWatchListComponent } from './ready-to-watch-list/ready-to-watch-list.component';
 import { AnimeEntryComponent } from './anime-entry/anime-entry.component';
 import {AlrtwMaterialModule} from "./alrtw-material/alrtw-material.module";
+import { FooterComponent } from './footer/footer.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     ReadyToWatchListComponent,
-    AnimeEntryComponent
+    AnimeEntryComponent,
+    FooterComponent
   ],
   imports: [
     BrowserModule,

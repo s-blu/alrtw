@@ -3,21 +3,21 @@ import {Component, OnInit} from '@angular/core';
 import {ReadyToWatchInfo} from '../ready-to-watch-info'
 import {AniListQueryService} from "../ani-list-query.service";
 import {AlrtwMaterialModule} from "../alrtw-material/alrtw-material.module";
+import {Globals} from "../globals";
 
 @Component({
   selector: 'alrtw-ready-to-watch-list',
   templateUrl: './ready-to-watch-list.component.html',
   styleUrls: ['./ready-to-watch-list.component.scss'],
-  providers: [AniListQueryService, AlrtwMaterialModule]
+  providers: [AniListQueryService, AlrtwMaterialModule, Globals]
 })
 export class ReadyToWatchListComponent implements OnInit {
   animes;
   listUpdated;
   username;
-  aniListUserName;
   errorText = "";
 
-  constructor(private aniListQueryService: AniListQueryService) {
+  constructor(private aniListQueryService: AniListQueryService, protected globals: Globals) {
   }
 
   uiGetList() {
@@ -33,7 +33,7 @@ export class ReadyToWatchListComponent implements OnInit {
 
     this.aniListQueryService.queryCurrentAnimeByUser(username).subscribe(currAnimeRes => {
         currentWatchedAnimes = currAnimeRes['data'].Page.mediaList;
-        this.aniListUserName = username;
+        this.globals.aniListUserName = username;
 
         this.aniListQueryService.queryAiringSheduleOfCurrentAnime(this.getListOfAnimeIds(currentWatchedAnimes))
           .subscribe(animeAiringRes => {
@@ -96,7 +96,7 @@ export class ReadyToWatchListComponent implements OnInit {
   private processFailure(error) {
     this.setError(error);
     this.animes = null;
-    this.aniListUserName = "";
+    this.globals.aniListUserName = "";
     this.listUpdated = null;
   }
 
