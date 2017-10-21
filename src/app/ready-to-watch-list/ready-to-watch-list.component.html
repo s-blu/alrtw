@@ -1,5 +1,23 @@
-<h3>Hello, {{username}}!</h3>
+<div class="username_form">
+  <form name="username_form">
+    <mat-form-field>
+      <input matInput name="username" placeholder="AniList username" [(ngModel)]="username">
+    </mat-form-field>
+    <button type="submit" mat-raised-button class="mat-primary" (click)="uiGetList()">Get List</button>
+  </form>
 
-<p>Here is your AniList AnimeList: </p>
+  <span *ngIf="listUpdated" class="listUpdated">
+  List retrieved at {{listUpdated.toLocaleString()}}
+</span>
+</div>
+<div class="error">{{errorText}}</div>
 
-{{animeList}}
+<div *ngIf="animes" class="animelist">
+  <h3>Hello, {{aniListUserName || "anime friend"}}!</h3>
+  <p>Here are your current animes and the episodes that are waiting for you: </p>
+
+  <div *ngFor="let currAnime of animes" class="ready-to-watch-list">
+    <alrtw-anime-entry [anime]="currAnime"></alrtw-anime-entry>
+  </div>
+</div>
+

@@ -1,0 +1,10 @@
+@import '../../variables';
+
+.ready-to-watch-list:nth-child(even) {
+  background: #f2f2f2;
+}
+
+.listUpdated {
+  color: $color_font_hint;
+  font-size:10pt;
+}
