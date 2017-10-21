@@ -13,7 +13,7 @@
 <div class="error">{{errorText}}</div>
 
 <div *ngIf="animes" class="animelist">
-  <h3>Hello, {{globals.aniListUserName || "anime friend"}}!</h3>
+  <h3>Hello, {{aniListUserName || "anime friend"}}!</h3>
   <p>Here are your current animes and the episodes that are waiting for you: </p>
 
   <div *ngFor="let currAnime of animes" class="ready-to-watch-list">
