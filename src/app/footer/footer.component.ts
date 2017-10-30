@@ -1,4 +1,4 @@
-import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 
 @Component({
   selector: 'alrtw-footer',
@@ -8,10 +8,12 @@ import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core'
 export class FooterComponent implements OnInit {
 
   aniList = {url: 'https://anilist.co/', text: 'AniList'};
+  github = {url: 'https://github.com/s-blu/alrtw', text: 'GitHub'};
   impressum = {url: 'http://readytowatch.s-blu.de/impressum.html', text: 'Impressum'};
 
   footerlinks = [
     this.aniList,
+    this.github,
     this.impressum
   ];
 

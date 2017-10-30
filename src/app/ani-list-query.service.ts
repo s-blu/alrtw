@@ -75,7 +75,7 @@ export class AniListQueryService {
     if (errorMsg[status]) {
       return errorMsg[status];
     } else {
-      return "Unexpected error: " + status;
+      return "Unknown error: " + status;
     }
   }
 }
