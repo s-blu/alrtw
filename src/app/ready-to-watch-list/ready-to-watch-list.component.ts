@@ -3,6 +3,7 @@ import {Component, OnInit} from '@angular/core';
 import {ReadyToWatchInfo} from '../ready-to-watch-info'
 import {AniListQueryService} from "../ani-list-query.service";
 import {AlrtwMaterialModule} from "../alrtw-material/alrtw-material.module";
+import {ActivatedRoute} from "@angular/router";
 
 @Component({
   selector: 'alrtw-ready-to-watch-list',
@@ -17,7 +18,16 @@ export class ReadyToWatchListComponent implements OnInit {
   aniListUserName;
   errorText = "";
 
-  constructor(private aniListQueryService: AniListQueryService) {
+  constructor(private aniListQueryService: AniListQueryService, private activatedRoute: ActivatedRoute) {
+      console.log('got into rtw component constructor');
+
+      this.activatedRoute.queryParams.subscribe(params => {
+        if (params['username']) {
+          this.username = params['username'];
+          this.uiGetList();
+          console.log('got username from params: ' + params['username']);
+        }
+      });
   }
 
   uiGetList() {
@@ -111,9 +121,7 @@ export class ReadyToWatchListComponent implements OnInit {
     this.listUpdated = new Date();
   }
 
-  ngOnInit() {
-  }
-
+  ngOnInit() {}
 }
 
 const AnimeStatus = {
