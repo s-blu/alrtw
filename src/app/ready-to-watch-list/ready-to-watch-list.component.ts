@@ -3,6 +3,7 @@ import {Component, OnInit} from '@angular/core';
 import {ReadyToWatchInfo} from '../ready-to-watch-info'
 import {AniListQueryService} from "../ani-list-query.service";
 import {AlrtwMaterialModule} from "../alrtw-material/alrtw-material.module";
+import {ActivatedRoute} from "@angular/router";
 
 @Component({
   selector: 'alrtw-ready-to-watch-list',
@@ -17,7 +18,16 @@ export class ReadyToWatchListComponent implements OnInit {
   aniListUserName;
   errorText = "";
 
-  constructor(private aniListQueryService: AniListQueryService) {
+  constructor(private aniListQueryService: AniListQueryService, private activatedRoute: ActivatedRoute) {
+      console.log('got into rtw component constructor');
+
+      this.activatedRoute.queryParams.subscribe(params => {
+        if (params['username']) {
+          this.username = params['username'];
+          this.uiGetList();
+          console.log('got username from params: ' + params['username']);
+        }
+      });
   }
 
   uiGetList() {
@@ -55,7 +65,8 @@ export class ReadyToWatchListComponent implements OnInit {
     currentAnimes.forEach(currentAnimeEntry => {
       const airingInfo = animeAiringSchedules.find(item => item.mediaId === currentAnimeEntry.mediaId);
       let episodesReadyToWatch,
-        timeUntilAiring = 0;
+        timeUntilAiring = 0,
+        mostRecentEpisode = currentAnimeEntry.media.episodes;
 
       // if the anime is not longer airing, there is no airing schedule. Calculate from total.
       if (currentAnimeEntry.media.status === AnimeStatus.FINISHED || currentAnimeEntry.status === AnimeStatus.CANCELLED) {
@@ -64,6 +75,7 @@ export class ReadyToWatchListComponent implements OnInit {
         // calculate - 1 since we got the info for the next episode to air, not the last released.
         episodesReadyToWatch = airingInfo.episode - currentAnimeEntry.progress - 1;
         timeUntilAiring = airingInfo.timeUntilAiring;
+        mostRecentEpisode = airingInfo.episode - 1;
       } else {
         // If the anime is not finished and no airingInfo is available, then its release is further than 1 week away
         episodesReadyToWatch = 0; // FIXME I HAVE NO FUCKING IDEA
@@ -74,7 +86,8 @@ export class ReadyToWatchListComponent implements OnInit {
         currentAnimeEntry.mediaId,
         currentAnimeEntry.media.title,
         episodesReadyToWatch,
-        timeUntilAiring
+        timeUntilAiring,
+        mostRecentEpisode
       ));
     });
 
@@ -108,9 +121,7 @@ export class ReadyToWatchListComponent implements OnInit {
     this.listUpdated = new Date();
   }
 
-  ngOnInit() {
-  }
-
+  ngOnInit() {}
 }
 
 const AnimeStatus = {

@@ -1,11 +1,17 @@
 <div class="ready-to-watch-entry">
   <div class="title">{{anime.title.userPreferred || anime.title.romaji}}</div>
-  <div class="episodes" *ngIf="anime.episodesReady > 0">{{anime.episodesReady}} ready to watch!</div>
-  <div class="nextAiring" *ngIf="anime.nextAiring">
-    <span *ngIf="anime.episodesReady <= 0 && anime.nextAiring !== 7 * 24 * 60 * 60">
-      Next available in {{getTimeUntilString(anime.nextAiring)}}!
+
+  <div class="waiting-episodes" *ngIf="anime.episodesReady > 0">
+    <span *ngIf="anime.episodesReady === 1"> Episode {{anime.latestEpisode}} is </span>
+    <span *ngIf="anime.episodesReady > 1">Episodes {{anime.latestEpisode - anime.episodesReady + 1}} to {{anime.latestEpisode}} are </span>
+    ready to watch!
+  </div>
+
+  <div class="next-airing" *ngIf="anime.nextAiring">
+    <span *ngIf="anime.episodesReady <= 0 && !sevenDaysAway">
+      Next available in {{timeUntilNextEpisode}}!
     </span>
-    <span *ngIf="anime.nextAiring === 7 * 24 * 60 * 60">Next is more than a week away D:</span>
+    <span *ngIf="sevenDaysAway">Next is more than a week away D:</span>
   </div>
 </div>
 
