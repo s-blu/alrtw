@@ -55,7 +55,8 @@ export class ReadyToWatchListComponent implements OnInit {
     currentAnimes.forEach(currentAnimeEntry => {
       const airingInfo = animeAiringSchedules.find(item => item.mediaId === currentAnimeEntry.mediaId);
       let episodesReadyToWatch,
-        timeUntilAiring = 0;
+        timeUntilAiring = 0,
+        mostRecentEpisode = currentAnimeEntry.media.episodes;
 
       // if the anime is not longer airing, there is no airing schedule. Calculate from total.
       if (currentAnimeEntry.media.status === AnimeStatus.FINISHED || currentAnimeEntry.status === AnimeStatus.CANCELLED) {
@@ -64,6 +65,7 @@ export class ReadyToWatchListComponent implements OnInit {
         // calculate - 1 since we got the info for the next episode to air, not the last released.
         episodesReadyToWatch = airingInfo.episode - currentAnimeEntry.progress - 1;
         timeUntilAiring = airingInfo.timeUntilAiring;
+        mostRecentEpisode = airingInfo.episode - 1;
       } else {
         // If the anime is not finished and no airingInfo is available, then its release is further than 1 week away
         episodesReadyToWatch = 0; // FIXME I HAVE NO FUCKING IDEA
@@ -74,7 +76,8 @@ export class ReadyToWatchListComponent implements OnInit {
         currentAnimeEntry.mediaId,
         currentAnimeEntry.media.title,
         episodesReadyToWatch,
-        timeUntilAiring
+        timeUntilAiring,
+        mostRecentEpisode
       ));
     });
 

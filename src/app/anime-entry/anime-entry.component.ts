@@ -9,6 +9,7 @@ import {ReadyToWatchInfo} from '../ready-to-watch-info';
 export class AnimeEntryComponent implements OnInit {
   @Input() anime: ReadyToWatchInfo;
   sevenDaysAway;
+  timeUntilNextEpisode;
 
   constructor() {
   }
@@ -24,6 +25,8 @@ export class AnimeEntryComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.sevenDaysAway = this.anime.nextAiring === 7 * 24 * 60 * 60;
+    this.timeUntilNextEpisode = this.getTimeUntilString(this.anime.nextAiring);
   }
 
 }

@@ -2,17 +2,21 @@
 
 .ready-to-watch-entry {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-columns: 1fr 1fr 0.5fr 1fr;
   grid-template-rows: 1fr;
 
   .title {
     grid-column: 1;
   }
   .episodes {
-    grid-column: 2;
-  }
-  .nextAiring {
     grid-column: 3;
+  }
+  .next-episode-info {
+    grid-column: 4;
     color: $color_font_hint;
+
+    .waiting-episodes {
+      color: rgba($color_font_hint, 0.7);
+    }
   }
 }
