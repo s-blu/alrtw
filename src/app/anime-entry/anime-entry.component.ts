@@ -24,6 +24,21 @@ export class AnimeEntryComponent implements OnInit {
     return `${days}d ${hrs}h ${mnts}min`;
   }
 
+  getEpisodesReadyString() {
+    let epsReadyString = '';
+
+    if (this.anime.episodesReady === 1) {
+      epsReadyString = `Episode ${this.anime.latestEpisode} is`;
+    } else if (this.anime.episodesReady === 2) {
+      epsReadyString = `Episodes ${this.anime.latestEpisode - 1} and ${this.anime.latestEpisode} are`;
+    } else {
+      epsReadyString = `Episodes ${this.anime.latestEpisode - this.anime.episodesReady + 1} to ${this.anime.latestEpisode} are`
+    }
+    epsReadyString += ' ready to watch!';
+
+    return epsReadyString;
+  }
+
   ngOnInit() {
     this.sevenDaysAway = this.anime.nextAiring === 7 * 24 * 60 * 60;
     this.timeUntilNextEpisode = this.getTimeUntilString(this.anime.nextAiring);

@@ -19,13 +19,10 @@ export class ReadyToWatchListComponent implements OnInit {
   errorText = "";
 
   constructor(private aniListQueryService: AniListQueryService, private activatedRoute: ActivatedRoute) {
-      console.log('got into rtw component constructor');
-
       this.activatedRoute.queryParams.subscribe(params => {
         if (params['username']) {
           this.username = params['username'];
           this.uiGetList();
-          console.log('got username from params: ' + params['username']);
         }
       });
   }
