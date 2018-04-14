@@ -1,0 +1,25 @@
+@import '~@angular/material/theming';
+
+// **Be sure that you only ever include this mixin once!**
+@include mat-core();
+
+$ani-list-blue: (
+  100: #9de7ff,
+  500: #00abff,
+  700: #0089d9,
+  900: #004169,
+  contrast: (
+    100: $black-87-opacity,
+    500: white,
+    700: white,
+    900: $white-87-opacity
+  )
+);
+
+// Define the default theme (same as the example above).
+$alrtw-theme-primary: mat-palette($ani-list-blue);
+$alrtw-theme-accent:  mat-palette($mat-amber);
+$alrtw-theme:   mat-light-theme($alrtw-theme-primary, $alrtw-theme-accent);
+
+// Include the default theme styles.
+@include angular-material-theme($alrtw-theme);

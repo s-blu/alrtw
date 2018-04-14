@@ -19,6 +19,7 @@
       "testTsconfig": "tsconfig.spec.json",
       "prefix": "alrtw",
       "styles": [
+        "app/alrtw-material/alrtw-material-theme.scss",
         "styles.scss"
       ],
       "scripts": [],

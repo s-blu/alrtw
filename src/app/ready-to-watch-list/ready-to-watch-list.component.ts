@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 
-import {ReadyToWatchInfo} from '../ready-to-watch-info'
+import {AnimeStatus, ReadyToWatchInfo} from '../ready-to-watch-info'
 import {AniListQueryService} from "../ani-list-query.service";
 import {AlrtwMaterialModule} from "../alrtw-material/alrtw-material.module";
 import {ActivatedRoute} from "@angular/router";
@@ -17,6 +17,7 @@ export class ReadyToWatchListComponent implements OnInit {
   username;
   aniListUserName;
   errorText = "";
+  greetingString;
 
   constructor(private aniListQueryService: AniListQueryService, private activatedRoute: ActivatedRoute) {
       this.activatedRoute.queryParams.subscribe(params => {
@@ -46,6 +47,7 @@ export class ReadyToWatchListComponent implements OnInit {
           .subscribe(animeAiringRes => {
 
             this.animes = this.transformToReadyToWatchInfo(currentWatchedAnimes, animeAiringRes['data'].Page.airingSchedules);
+            this.greetingString = this.getGreetingString(this.animes);
 
             this.saveUpdatedTime();
             this.resetError();
@@ -84,11 +86,18 @@ export class ReadyToWatchListComponent implements OnInit {
         currentAnimeEntry.media.title,
         episodesReadyToWatch,
         timeUntilAiring,
-        mostRecentEpisode
+        mostRecentEpisode,
+        currentAnimeEntry.media.status
       ));
     });
 
     return readyToWatchInfos;
+  }
+
+  private getGreetingString(readyToWatchInfos) {
+    const totalReadyEpisodes = readyToWatchInfos.reduce((acc, info) => acc + info.episodesReady, 0);
+    return `Currently ${totalReadyEpisodes || 'the following'} ` +
+            `${totalReadyEpisodes === 1 ? 'episode is' : 'episodes are'} waiting for you: `;
   }
 
   private getListOfAnimeIds(currentAnimes) {
@@ -121,9 +130,4 @@ export class ReadyToWatchListComponent implements OnInit {
   ngOnInit() {}
 }
 
-const AnimeStatus = {
-  FINISHED: "FINISHED",
-  CANCELLED: "CANCELLED",
-  NOT_YET_RELEASING: "NOT_YET_RELEASING",
-  RELEASING: "RELEASING"
-};
+

@@ -1,15 +1,18 @@
 <div class="ready-to-watch-entry">
   <div class="title">{{anime.title.userPreferred || anime.title.romaji}}</div>
 
-  <div class="waiting-episodes" *ngIf="anime.episodesReady > 0">
-    <span>{{getEpisodesReadyString()}}</span>
+  <div class="waiting-episodes" *ngIf="anime.episodesReady > 0" matTooltip="{{forecastString}}" matTooltipPosition="right">
+    <span>{{episodesReadyString}}</span>
   </div>
 
   <div class="next-airing" *ngIf="anime.nextAiring">
     <span *ngIf="anime.episodesReady <= 0 && !sevenDaysAway">
       Next available in {{timeUntilNextEpisode}}!
     </span>
-    <span *ngIf="sevenDaysAway">Could not get any info. Sorry. :(</span>
+    <span *ngIf="sevenDaysAway"
+          matTooltip="Either no information is available or the next airing is more than seven days away">
+      Could not get any info. Sorry. :(
+    </span>
   </div>
 </div>
 

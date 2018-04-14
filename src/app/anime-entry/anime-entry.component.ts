@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {ReadyToWatchInfo} from '../ready-to-watch-info';
+import {AnimeStatus, ReadyToWatchInfo} from '../ready-to-watch-info';
 
 @Component({
   selector: 'alrtw-anime-entry',
@@ -10,6 +10,8 @@ export class AnimeEntryComponent implements OnInit {
   @Input() anime: ReadyToWatchInfo;
   sevenDaysAway;
   timeUntilNextEpisode;
+  episodesReadyString;
+  forecastString;
 
   constructor() {
   }
@@ -39,9 +41,23 @@ export class AnimeEntryComponent implements OnInit {
     return epsReadyString;
   }
 
+  getForecastString() {
+    let forecast = "";
+
+    if (this.anime.airingStatus === AnimeStatus.RELEASING || this.anime.airingStatus === AnimeStatus.NOT_YET_RELEASING) {
+      forecast = `Episode ${this.anime.latestEpisode + 1} is available in ${this.timeUntilNextEpisode}!`
+    } else {
+      forecast = `This anime is ${this.anime.airingStatus}. No more episodes incoming!`
+    }
+
+    return forecast;
+  }
+
   ngOnInit() {
     this.sevenDaysAway = this.anime.nextAiring === 7 * 24 * 60 * 60;
     this.timeUntilNextEpisode = this.getTimeUntilString(this.anime.nextAiring);
+    this.episodesReadyString = this.getEpisodesReadyString();
+    this.forecastString = this.getForecastString();
   }
 
 }
