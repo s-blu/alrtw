@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 
-import {ReadyToWatchInfo} from '../ready-to-watch-info'
+import {AnimeStatus, ReadyToWatchInfo} from '../ready-to-watch-info'
 import {AniListQueryService} from "../ani-list-query.service";
 import {AlrtwMaterialModule} from "../alrtw-material/alrtw-material.module";
 import {ActivatedRoute} from "@angular/router";
@@ -84,7 +84,8 @@ export class ReadyToWatchListComponent implements OnInit {
         currentAnimeEntry.media.title,
         episodesReadyToWatch,
         timeUntilAiring,
-        mostRecentEpisode
+        mostRecentEpisode,
+        currentAnimeEntry.media.status
       ));
     });
 
@@ -121,9 +122,4 @@ export class ReadyToWatchListComponent implements OnInit {
   ngOnInit() {}
 }
 
-const AnimeStatus = {
-  FINISHED: "FINISHED",
-  CANCELLED: "CANCELLED",
-  NOT_YET_RELEASING: "NOT_YET_RELEASING",
-  RELEASING: "RELEASING"
-};
+
