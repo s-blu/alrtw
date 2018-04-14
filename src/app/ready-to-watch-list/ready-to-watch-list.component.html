@@ -3,7 +3,7 @@
     <mat-form-field>
       <input matInput name="username" placeholder="AniList username" [(ngModel)]="username">
     </mat-form-field>
-    <button type="submit" mat-raised-button (click)="uiGetList()">Get List</button>
+    <button type="submit" class="mat-primary" mat-raised-button (click)="uiGetList()">Get List</button>
   </form>
 
   <span *ngIf="listUpdated" class="listUpdated">
