@@ -17,6 +17,7 @@ export class ReadyToWatchListComponent implements OnInit {
   username;
   aniListUserName;
   errorText = "";
+  greetingString;
 
   constructor(private aniListQueryService: AniListQueryService, private activatedRoute: ActivatedRoute) {
       this.activatedRoute.queryParams.subscribe(params => {
@@ -46,6 +47,7 @@ export class ReadyToWatchListComponent implements OnInit {
           .subscribe(animeAiringRes => {
 
             this.animes = this.transformToReadyToWatchInfo(currentWatchedAnimes, animeAiringRes['data'].Page.airingSchedules);
+            this.greetingString = this.getGreetingString(this.animes);
 
             this.saveUpdatedTime();
             this.resetError();
@@ -90,6 +92,12 @@ export class ReadyToWatchListComponent implements OnInit {
     });
 
     return readyToWatchInfos;
+  }
+
+  private getGreetingString(readyToWatchInfos) {
+    const totalReadyEpisodes = readyToWatchInfos.reduce((acc, info) => acc + info.episodesReady, 0);
+    return `Currently ${totalReadyEpisodes || 'the following'} ` +
+            `${totalReadyEpisodes === 1 ? 'episode is' : 'episodes are'} waiting for you: `;
   }
 
   private getListOfAnimeIds(currentAnimes) {

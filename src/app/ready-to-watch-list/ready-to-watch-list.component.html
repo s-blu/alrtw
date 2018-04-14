@@ -3,7 +3,7 @@
     <mat-form-field>
       <input matInput name="username" placeholder="AniList username" [(ngModel)]="username">
     </mat-form-field>
-    <button type="submit" mat-raised-button class="mat-primary" (click)="uiGetList()">Get List</button>
+    <button type="submit" mat-raised-button (click)="uiGetList()">Get List</button>
   </form>
 
   <span *ngIf="listUpdated" class="listUpdated">
@@ -14,7 +14,7 @@
 
 <div *ngIf="animes" class="animelist">
   <h3>Hello, {{aniListUserName || "anime friend"}}!</h3>
-  <p>Here are your current animes and the episodes that are waiting for you: </p>
+  <p>{{greetingString}}</p>
 
   <div *ngFor="let currAnime of animes" class="ready-to-watch-list">
     <alrtw-anime-entry [anime]="currAnime"></alrtw-anime-entry>
@@ -22,4 +22,3 @@
 
   <div class="bookmark-url">Bookmark http://readytowatch.s-blu.de/?username={{aniListUserName}} </div>
 </div>
-
