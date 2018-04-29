@@ -5,6 +5,12 @@
   grid-template-rows: 1fr;
   padding: 5px;
 
+  font-weight: bold;
+
+  .header:hover {
+    cursor: pointer;
+  }
+
   .title {
     grid-column: 1;
   }

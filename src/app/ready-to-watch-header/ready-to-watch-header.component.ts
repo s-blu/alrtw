@@ -9,7 +9,8 @@ import {ReadyToWatchInfo} from "../ready-to-watch-info";
 export class ReadyToWatchHeaderComponent implements OnInit {
   @Input() animes: Array<ReadyToWatchInfo>;
   order = {
-    name: 1
+    name: 1,
+    rtw: 1
   };
 
   constructor() { }
@@ -17,18 +18,19 @@ export class ReadyToWatchHeaderComponent implements OnInit {
   ngOnInit() {
   }
 
-  sortNumeric(prop) {
-    if (!this.order[prop]) {
-      this.order[prop] = 1;
-    }
-    this.animes.sort((animeA, animeB) => (animeA[prop] - animeB[prop]) * this.order[prop]);
-    this.order[prop] = -this.order[prop];
+  sortByRtwInfo() {
+    this.animes.sort((animeA, animeB) => {
+      let compare = (animeA.episodesReady - animeB.episodesReady) * this.order.rtw;
+      if (compare === 0) {
+        compare = (animeA.nextAiring - animeB.nextAiring) * this.order.rtw;
+      }
+
+      return compare;
+    });
+    this.order.rtw = -this.order.rtw;
   }
 
   sortByName() {
-    if (!this.order.name) {
-      this.order.name = 1;
-    }
     this.animes.sort((animeA, animeB) => (animeA.title).localeCompare(animeB.title) * this.order.name);
     this.order.name = -this.order.name;
   }
