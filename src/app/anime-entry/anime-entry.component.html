@@ -6,12 +6,8 @@
   </div>
 
   <div class="next-airing" *ngIf="anime.nextAiring">
-    <span *ngIf="anime.episodesReady <= 0 && !sevenDaysAway">
+    <span *ngIf="anime.episodesReady <= 0 && timeUntilNextEpisode">
       Next available in {{timeUntilNextEpisode}}!
-    </span>
-    <span *ngIf="sevenDaysAway"
-          matTooltip="Either no information is available or the next airing is more than seven days away">
-      Could not get any info. Sorry. :(
     </span>
   </div>
 </div>
