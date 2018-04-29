@@ -1,8 +1,8 @@
 <div class="ready-to-watch-entry">
-  <div class="title">{{anime.title.userPreferred || anime.title.romaji}}</div>
+  <div class="title">{{anime.title}}</div>
 
-  <div class="waiting-episodes" *ngIf="anime.episodesReady > 0" matTooltip="{{forecastString}}" matTooltipPosition="right">
-    <span>{{episodesReadyString}}</span>
+  <div class="waiting-episodes" *ngIf="anime.episodesReady > 0" >
+    <span matTooltip="{{forecastString}}" matTooltipPosition="right">{{episodesReadyString}}</span>
   </div>
 
   <div class="next-airing" *ngIf="anime.nextAiring">

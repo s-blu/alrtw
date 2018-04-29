@@ -83,7 +83,7 @@ export class ReadyToWatchListComponent implements OnInit {
 
       readyToWatchInfos.push(new ReadyToWatchInfo(
         currentAnimeEntry.mediaId,
-        currentAnimeEntry.media.title,
+        currentAnimeEntry.media.title.userPreferred || currentAnimeEntry.media.title.romaji,
         episodesReadyToWatch,
         timeUntilAiring,
         mostRecentEpisode,
