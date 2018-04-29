@@ -16,6 +16,7 @@
   <h3>Hello, {{aniListUserName || "anime friend"}}!</h3>
   <p>{{greetingString}}</p>
 
+  <alrtw-ready-to-watch-header [animes]="animes"></alrtw-ready-to-watch-header>
   <div *ngFor="let currAnime of animes" class="ready-to-watch-list">
     <alrtw-anime-entry [anime]="currAnime"></alrtw-anime-entry>
   </div>

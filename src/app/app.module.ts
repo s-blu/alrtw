@@ -9,6 +9,7 @@ import { ReadyToWatchListComponent } from './ready-to-watch-list/ready-to-watch-
 import { AnimeEntryComponent } from './anime-entry/anime-entry.component';
 import {AlrtwMaterialModule} from "./alrtw-material/alrtw-material.module";
 import { FooterComponent } from './footer/footer.component';
+import { ReadyToWatchHeaderComponent } from './ready-to-watch-header/ready-to-watch-header.component';
 
 
 const appRoutes: Routes = [
@@ -19,7 +20,8 @@ const appRoutes: Routes = [
     AppComponent,
     ReadyToWatchListComponent,
     AnimeEntryComponent,
-    FooterComponent
+    FooterComponent,
+    ReadyToWatchHeaderComponent
   ],
   imports: [
     BrowserModule,

@@ -1,19 +1,20 @@
-@import '../../variables';
 
-.ready-to-watch-entry {
+.ready-to-watch-header {
   display: grid;
   grid-template-columns: 2fr 1fr;
   grid-template-rows: 1fr;
   padding: 5px;
 
+  font-weight: bold;
+
+  .header:hover {
+    cursor: pointer;
+  }
+
   .title {
     grid-column: 1;
   }
-  .waiting-episodes {
+  .ready-to-watch-info {
     grid-column: 2;
-  }
-  .next-airing {
-    grid-column: 2;
-    color: $color_font_hint;
   }
 }
