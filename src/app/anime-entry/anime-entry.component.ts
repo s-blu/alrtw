@@ -16,6 +16,10 @@ export class AnimeEntryComponent implements OnInit {
   }
 
   getTimeUntilString(secs) {
+    if (secs === -1) {
+      return null;
+    }
+
     const days = Math.floor(secs / (3600 * 24));
     secs  -= days * 3600 * 24;
     const hrs   = Math.floor(secs / 3600);
