@@ -22,7 +22,7 @@ export class ReadyToWatchHeaderComponent implements OnInit {
     this.animes.sort((animeA, animeB) => {
       let compare = (animeA.episodesReady - animeB.episodesReady) * this.order.rtw;
       if (compare === 0) {
-        compare = (animeA.nextAiring - animeB.nextAiring) * this.order.rtw;
+        compare = (animeB.nextAiring - animeA.nextAiring) * this.order.rtw;
       }
 
       return compare;
