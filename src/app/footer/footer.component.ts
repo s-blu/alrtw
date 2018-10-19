@@ -12,7 +12,7 @@ export class FooterComponent implements OnInit {
 
   aniList = {url: 'https://anilist.co/', text: 'AniList'};
   github = {url: 'https://github.com/s-blu/alrtw', text: 'GitHub'};
-  impressum = {url: 'http://readytowatch.s-blu.de/impressum.html', text: 'Impressum'};
+  impressum = {url: 'http://readytowatch.s-blu.de/impressum.html', text: 'Impressum & Datenschutz'};
 
   version = appVersion;
 
